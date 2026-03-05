@@ -22,7 +22,7 @@ func main(){
 	cfg := config.MustLoad()
 	
 	// database setup
-	_,err := sqlite.New(cfg)
+	storage,err := sqlite.New(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -31,7 +31,7 @@ func main(){
 	// router setup
 	router := http.NewServeMux()
 
-	router.HandleFunc("POST /api/v1/students", student.NewStudentHandler())
+	router.HandleFunc("POST /api/v1/students", student.NewStudentHandler(storage))
 	// server setup
 	server := http.Server{
 		Addr: cfg.HTTPServer.Address,
@@ -43,7 +43,7 @@ func main(){
 	
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 	go func () {
-		if err := server.ListenAndServe(); err != nil {
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("error starting server: %s", err.Error())
 		}
 	}()
