@@ -4,6 +4,8 @@ go 1.25.7
 
 require golang.org/x/tools v0.42.0
 
+require github.com/mattn/go-sqlite3 v1.14.34 // indirect
+
 require (
 	github.com/BurntSushi/toml v1.6.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.12 // indirect
