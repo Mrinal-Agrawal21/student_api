@@ -7,6 +7,7 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+	"strconv"
 
 	"github.com/Mrinal-Agrawal21/student-api/internal/storage"
 	"github.com/Mrinal-Agrawal21/student-api/internal/types"
@@ -51,5 +52,25 @@ func NewStudentHandler(storage storage.Storage) http.HandlerFunc{
 		}
 
 		response.WriteJson(w,http.StatusCreated,map[string]int64 {"id":lastId})
+	}
+}
+func GetStudentByIdHandler(storage storage.Storage) http.HandlerFunc{
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
+		slog.Info("fetching a student" , slog.String("id" , fmt.Sprint(id)))
+
+		intId , err := strconv.ParseInt(id,10,64)
+		if err != nil {
+			response.WriteJson(w, http.StatusBadRequest ,response.GeneralError(err))
+		}
+
+		student , err := storage.GetStudentById(intId)
+		if err != nil {
+			slog.Error("error fetching student" , slog.String("id" , fmt.Sprint(id)))
+			response.WriteJson(w, http.StatusInternalServerError ,response.GeneralError(err))
+			return
+		}
+		slog.Info("student fetched successfully" , slog.String("id" , fmt.Sprint(id)))
+		response.WriteJson(w,http.StatusOK,student)
 	}
 }

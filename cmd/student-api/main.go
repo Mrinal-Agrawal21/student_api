@@ -32,6 +32,7 @@ func main(){
 	router := http.NewServeMux()
 
 	router.HandleFunc("POST /api/v1/students", student.NewStudentHandler(storage))
+	router.HandleFunc("GET /api/v1/students/{id}", student.GetStudentByIdHandler(storage))
 	// server setup
 	server := http.Server{
 		Addr: cfg.HTTPServer.Address,
@@ -60,5 +61,5 @@ func main(){
 		slog.Error("error shutting down server", slog.String("error", err.Error()))
 	}
 	slog.Info("Server is shut down")
-
+ 
 }
